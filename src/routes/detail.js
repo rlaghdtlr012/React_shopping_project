@@ -1,8 +1,10 @@
 /* eslint-disable */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from 'styled-components';
 import { Nav } from 'react-bootstrap';
+import { Context1 } from './../App.js';
+
 let YellowBtn = styled.button`
   background : ${props => props.bg};
   color : ${props => props.bg == 'blue' ? 'white' : 'black'};
@@ -20,6 +22,9 @@ function Detail(props){
   let [alert, setAlert] = useState(true);
   let [intext, setIntext] = useState('');
   let [textyn, setTextyn] = useState(false);
+  let [fade2, setFade2] = useState('');
+ 
+  let {재고, shoes} = useContext(Context1);
   const onChange = (e) => {
     setIntext(e.target.value);
     const regex = /^[0-9]+$/;
@@ -29,6 +34,14 @@ function Detail(props){
       setTextyn(false);
     }
   };
+  useEffect(()=>{
+    setTimeout(()=>{
+      setFade2('end');
+    }, 100);
+    return () => {
+      setFade2('');
+    }
+  },[]);
   useEffect(()=>{ // mount, update 될 때, 여기 코드 실행됨
     setTimeout(()=>{setAlert(false);}, 2000);
     // return () => {
@@ -47,7 +60,7 @@ function Detail(props){
     return x.id == id
   });
   return (
-    <div className="container">
+    <div className={"container start" + fade2}>
       {
         alert == true ? <div className="alert alert-warning">2초이내 구매시 할인</div> : null
       }
@@ -71,7 +84,9 @@ function Detail(props){
       </div>
       <Nav variant="tabs"  defaultActiveKey="link0">
         <Nav.Item>
-          <Nav.Link eventKey="link0">버튼0</Nav.Link>
+          <Nav.Link onClick={()=>{
+            setTab(0);
+          }} eventKey="link0">버튼0</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link onClick={()=>{
@@ -88,7 +103,7 @@ function Detail(props){
     </div> 
   );
 }
-function TabContent(props){
+function TabContent({tab}){
   // if(props.tab == 0){
   //   return <div>내용0</div>
   // } else if(props.tab == 1){
@@ -96,7 +111,16 @@ function TabContent(props){
   // } else {
   //   return <div>내용2</div>
   // }
-  return [<div>내용0</div>, <div>내용1</div>, <div>내용2</div>][props.tab];
+  let {재고, shoes} = useContext(Context1);
+  let [fade, setFade] = useState('');
+  useEffect(()=>{
+    setTimeout(()=>{setFade('end')}, 100);
+    return () => {
+      setFade('');
+    }
+  }, [tab])
+  return <div className={'start'+ fade}>
+    {[<div>{재고[0]}</div>, <div>내용1</div>, <div>내용2</div>][tab]}
+  </div>
 }
-
 export default Detail;

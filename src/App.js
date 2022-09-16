@@ -1,16 +1,20 @@
 import logo from './logo.svg';
 import './App.css';
-import {useState} from "react";
+import {createContext, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, Navbar, Container, Nav, Row, Col} from 'react-bootstrap';
 import bg from './bg.png';
 import {data} from './data.js'; 
 import {Routes, Route, Link, useNavigate, Outlet} from 'react-router-dom';
-import Detail from "./routes/detail.js";
+import Detail from "./routes/Detail.js";
 import axios from 'axios';
+import Cart from "./routes/Cart.js";
 
-function App() {
+export let Context1 = createContext();
+
+function App(){
   let [shoes, setShoes] = useState(data);
+  let [재고] = useState([10,11,12]);
   let navigate = useNavigate();
   let [num, setNum] = useState(2);
   return (
@@ -49,6 +53,10 @@ function App() {
               .catch(()=>{
                 console.log('실패함ㅅㄱ');
               })
+
+              // 서버에 post 요청하는 법
+              // axios.post('URL', {name : 'kim'})
+
               // 한번에 여러번 get 요청을 하게 해주는 코드, get 요청을 통해 다 받는다면, ~~~~~ 코드 실행
               // Promise.all([axios.get('/url'), axios.get('/url2')])
               // .then(()=>{
@@ -58,7 +66,12 @@ function App() {
           </Container>
         </>
       }/>
-      <Route path="/detail/:id" element={<Detail shoes={shoes}/>}/>
+      <Route path="/detail/:id" element={
+        <Context1.Provider value={{재고, shoes}}>
+          <Detail shoes={shoes}/>
+        </Context1.Provider>
+      }/>
+      <Route path="/cart" element={<Cart/>}/>
       <Route path="*" element={<div>없는페이지인데요</div>}/>
       <Route path="/about" element={<About/>}>
         <Route path="member" element={<div>멤버정보임</div>} />
