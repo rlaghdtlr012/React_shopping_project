@@ -3,8 +3,9 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from 'styled-components';
 import { Nav } from 'react-bootstrap';
-import { Context1 } from './../App.js';
-
+import { Context1 } from '../App.js';
+import { useDispatch } from 'react-redux';
+import { addItem } from './../store.js';
 let YellowBtn = styled.button`
   background : ${props => props.bg};
   color : ${props => props.bg == 'blue' ? 'white' : 'black'};
@@ -23,8 +24,9 @@ function Detail(props){
   let [intext, setIntext] = useState('');
   let [textyn, setTextyn] = useState(false);
   let [fade2, setFade2] = useState('');
- 
   let {재고, shoes} = useContext(Context1);
+  let dispatch = useDispatch();
+  
   const onChange = (e) => {
     setIntext(e.target.value);
     const regex = /^[0-9]+$/;
@@ -59,6 +61,17 @@ function Detail(props){
   let 찾은상품 = props.shoes.find(function(x){
     return x.id == id
   });
+
+  useEffect(()=>{ // 로컬스토리지에 detail 페이지 다녀간 기록 남기기
+    let 꺼낸거 = localStorage.getItem('watched');
+    꺼낸거 = JSON.parse(꺼낸거);
+    꺼낸거.push(찾은상품.id);
+    꺼낸거 = new Set(꺼낸거); // set으로 중복제거
+    꺼낸거 = Array.from(꺼낸거); // 다시 array로 변환
+    localStorage.setItem('watched', JSON.stringify(꺼낸거));
+  }, [])
+  
+
   return (
     <div className={"container start" + fade2}>
       {
@@ -79,7 +92,9 @@ function Detail(props){
           <h4 className="pt-5">{찾은상품.title}</h4>
           <p>{찾은상품.content}</p>
           <p>{찾은상품.price}원</p>
-          <button className="btn btn-danger">주문하기</button> 
+          <button className="btn btn-danger" onClick={()=>{
+            dispatch(addItem( {id : 4, name : 'Yellow monkey', count : 2} ));
+          }}>주문하기</button> 
         </div>
       </div>
       <Nav variant="tabs"  defaultActiveKey="link0">

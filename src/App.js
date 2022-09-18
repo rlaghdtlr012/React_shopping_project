@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import {createContext, useState} from "react";
+import {createContext, useState, useEffect} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, Navbar, Container, Nav, Row, Col} from 'react-bootstrap';
 import bg from './bg.png';
@@ -13,18 +13,25 @@ import Cart from "./routes/Cart.js";
 export let Context1 = createContext();
 
 function App(){
+  // let obj = {name : 'kim'};
+  // JSON화 시킨다. 왜냐하면 로컬스토리지에는 문자열 밖에 저장을 못하기 때문에
+  // localStorage.setItem('data', JSON.stringify(obj));
   let [shoes, setShoes] = useState(data);
   let [재고] = useState([10,11,12]);
   let navigate = useNavigate();
   let [num, setNum] = useState(2);
+  useEffect(()=>{
+    localStorage.setItem('watched', JSON.stringify( [] ))
+
+  },[])
   return (
     <div className="App">
       <Navbar bg="dark" variant="dark">
         <Container>
           <Navbar.Brand onClick={()=>{navigate('/')}}>홍쇼핑</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link onClick={()=>{navigate('/')}}>홈</Nav.Link>
-            <Nav.Link onClick={()=>{navigate('/detail')}}>상세페이지</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/cart')}}>홈</Nav.Link>
+            <Nav.Link onClick={()=>{navigate('/detail/0')}}>상세페이지</Nav.Link>
           </Nav>
         </Container>
       </Navbar>
@@ -104,9 +111,12 @@ function About(){
 }
 
 function Card(props) {
+  let navigate = useNavigate();
   return (
       <div className="col-md-4">
-        <img src = {`https://codingapple1.github.io/shop/shoes${props.p+1}.jpg`} width="80%"/>
+        <img src = {`https://codingapple1.github.io/shop/shoes${props.p+1}.jpg`} width="80%" onClick={()=>{
+          navigate(`/detail/${props.p}`);
+        }}/>
         <h6>상품 이름 : {props.shoes[props.p].title}</h6>
         <p>상품 내용 : {props.shoes[props.p].content}</p>
         <p>가격 : {props.shoes[props.p].price}</p>
